@@ -8,7 +8,8 @@
     <home-swiper :banners="banners"></home-swiper>
     <recommend-view :recommends="recommends"></recommend-view>
     <FeatureView></FeatureView>
-    <TabControl class="tab-control" :titles="['流行', '新款', '精选']"></TabControl>
+    <TabControl class="tab-control" :titles="['流行', '新款', '精选']" @tabClick="tabClick"></TabControl>
+    <GoodsList :goods="showGoods"></GoodsList>
     <ul>
       <li></li>
       <li></li>
@@ -122,6 +123,7 @@ import FeatureView from "@/views/home/childcomponent/FeatureView";
 
 import NavBar from "@/components/common/navbar/NavBar";
 import TabControl from "@/components/content/tabcontrol/TabControl";
+import GoodsList from "@/components/content/goods/GoodsList";
 
 import {getHomeMultiData, getHomeGoods} from "@/network/home";
 
@@ -132,7 +134,8 @@ export default {
     TabControl,
     HomeSwiper,
     RecommendView,
-    FeatureView
+    FeatureView,
+    GoodsList
   },
   data() {
     return {
@@ -142,7 +145,8 @@ export default {
         'pop': {page: 0, list: []},
         'new': {page: 0, list: []},
         'sell': {page: 0, list: []}
-      }
+      },
+      currentType: 'pop'
     }
   },
   created() {
@@ -150,6 +154,11 @@ export default {
     this.getHomeGoods('pop');
     this.getHomeGoods('sell');
     this.getHomeGoods('new');
+  },
+  computed: {
+    showGoods() {
+      return this.goods[this.currentType].list
+    }
   },
   methods: {
     getHomeMultiData() {
@@ -166,6 +175,19 @@ export default {
         this.goods[type].page += 1;
         // console.log(res);
       })
+    },
+    tabClick(index) {
+      switch (index) {
+        case 0:
+          this.currentType = 'pop';
+          break;
+        case 1:
+          this.currentType = 'new';
+          break;
+        case 2:
+          this.currentType = 'sell'
+          break;
+      }
     }
   }
 }
@@ -188,5 +210,7 @@ export default {
   .tab-control {
     position: sticky;
     top: 44px;
+    z-index: 9;
+    background: #ffffff;
   }
 </style>
