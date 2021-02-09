@@ -123,7 +123,7 @@ import FeatureView from "@/views/home/childcomponent/FeatureView";
 import NavBar from "@/components/common/navbar/NavBar";
 import TabControl from "@/components/content/tabcontrol/TabControl";
 
-import {getHomeMultiData} from "@/network/home";
+import {getHomeMultiData, getHomeGoods} from "@/network/home";
 
 export default {
   name: "Home",
@@ -140,17 +140,33 @@ export default {
       recommends: [],
       goods: {
         'pop': {page: 0, list: []},
-        'news': {page: 0, list: []},
+        'new': {page: 0, list: []},
         'sell': {page: 0, list: []}
       }
     }
   },
   created() {
-    getHomeMultiData().then(res => {
-      this.banners = res.data.banner.list
-      this.recommends = res.data.recommend.list
-      // console.log(res);
-    })
+    this.getHomeMultiData();
+    this.getHomeGoods('pop');
+    this.getHomeGoods('sell');
+    this.getHomeGoods('new');
+  },
+  methods: {
+    getHomeMultiData() {
+      getHomeMultiData().then(res => {
+        this.banners = res.data.banner.list
+        this.recommends = res.data.recommend.list
+        // console.log(res);
+      })
+    },
+    getHomeGoods(type) {
+      const page = this.goods[type].page + 1
+      getHomeGoods(type, page).then(res => {
+        this.goods[type].list.push(...res.data.list)
+        this.goods[type].page += 1;
+        // console.log(res);
+      })
+    }
   }
 }
 </script>
